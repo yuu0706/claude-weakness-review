@@ -25,7 +25,7 @@ run_test() {
   local name="$1" rc miss f
   shift
   for f in "$@"; do
-    case "$f" in */test_*.sh|*/test_*.py)
+    case "$f" in */test_*.sh|*/test_*.py|*/scripts/test.sh)
       miss="$(missing_skills "$f")"
       if [ -n "$miss" ]; then
         results+=("SKIP ${name}（無いスキル: ${miss}）")

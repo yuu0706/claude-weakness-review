@@ -1,6 +1,6 @@
 #!/bin/bash
 # requires: report-inbox change-review memory-audit feedback-mining skill-audit repo-patrol secret-patrol skill-updates weakness-review
-# install.sh を公開版の組（tools/groups.tsv の notify・review・patrol・weakness）ごとの写しで動かし、その組のスキルの分だけを
+# install.sh を公開版の組（tools/groups.tsv の report-inbox・review・patrol・weakness-review）ごとの写しで動かし、その組のスキルの分だけを
 # 入れ・外すことを確かめる。4つを同じ HOME に入れ、1つを外しても他の組のフックと定期実行が残ることも確かめる。
 # 一時の HOME と偽の launchctl で動かし、本物の HOME・launchctl には触れない（2026-11-04）。
 set -u
@@ -56,10 +56,10 @@ make_copy() {
   done
   printf '%s\n' "$d"
 }
-NOTIFY="$(make_copy notify)"
+NOTIFY="$(make_copy report-inbox)"
 REVIEW="$(make_copy review)"
 PATROL="$(make_copy patrol)"
-WEAKNESS="$(make_copy weakness)"
+WEAKNESS="$(make_copy weakness-review)"
 
 new_home() {
   export HOME="$WORK/home-$1"
@@ -86,6 +86,7 @@ check "定期実行を登録しない" '[ -z "$(jobs)" ]'
 check "見回りの範囲を書かない" '[ ! -e "$HOME/$CONF_REL" ]'
 check "記録の置き場所を作らない" '[ ! -e "$HOME/.local/state/claude-reports/changes" ] && [ ! -e "$HOME/claude-reports/proposals" ]'
 check "週1回の見直しを聞かない・claude の行を出さない" '! printf "%s" "$out" | grep -q "週1回の見直し"'
+check "change-review が無ければ件数が出るとは案内しない" '! printf "%s" "$out" | grep -q "件数が出ます" && printf "%s" "$out" | grep -q "定期実行の結果と失敗は会話の開始時に知らせます"'
 
 echo "== 見直しの組"
 new_home review
@@ -117,6 +118,16 @@ check "週1回の見直しは weakness-review だけを登録する" '[ "$(jobs)
 check "見回りの範囲を書かない" '[ ! -e "$HOME/$CONF_REL" ]'
 "$WEAKNESS/install.sh" --uninstall </dev/null >/dev/null 2>&1; rc=$?
 check "外す: すべて消える" '[ "$rc" -eq 0 ] && [ -z "$(links)" ] && [ -z "$(jobs)" ]'
+
+echo "== change-review が要るスキルを1つだけ入れる"
+MA="$(make_copy memory-audit)"
+CR="$(make_copy change-review)"
+new_home memory-audit
+out="$("$MA/install.sh" --yes --no-schedule </dev/null 2>&1)"; rc=$?
+check "change-review が無ければ注意を出す（終了コード0）" '[ "$rc" -eq 0 ] && printf "%s" "$out" | grep -q "memory-audit は change-review が無いと動きません"'
+"$CR/install.sh" --yes </dev/null >/dev/null 2>&1
+out="$("$MA/install.sh" --yes --no-schedule </dev/null 2>&1)"
+check "change-review を入れてあれば注意を出さない" '! printf "%s" "$out" | grep -q "change-review が無いと動きません"'
 
 echo "== 4つを同じ HOME に入れて、1つずつ外す"
 new_home all
