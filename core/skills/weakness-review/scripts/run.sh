@@ -25,8 +25,6 @@ OVERRIDE_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/claude-skills/$JOB_NAME.local.m
 UI_TEXT_LOG="${UI_TEXT_FEEDBACK_LOG:-$HOME/.local/state/ui-text/feedback-log.md}"
 SKILL_AUDIT_HISTORY="${SKILL_AUDIT_STATE:-$HOME/.local/state/skill-audit}"
 SKILL_AUDIT_HISTORY="${SKILL_AUDIT_HISTORY%/}/history.md"
-# 作業の筋違いを判定する Stop hook の記録（JSON Lines。無ければ飛ばす）。
-GATE_LOG="${WEAKNESS_REVIEW_GATE_LOG:-$HOME/.local/state/alignment-gate/log.jsonl}"
 
 JOBS_CONF="${CLAUDE_REVIEW_JOBS_CONF:-${XDG_CONFIG_HOME:-$HOME/.config}/claude-review-inbox/jobs.conf}"
 jobs_conf() {
@@ -147,7 +145,7 @@ if [ "$count" -eq 0 ] && [ -z "$fm_latest" ]; then
   exit 0
 fi
 
-PROMPT="Skill weakness-review を自動モードで実行する（本文の「2. 週次の見直し」）。対象の期間は ${since} 以降。材料: 今週の指摘の記録は ${entries}（${count}件）。feedback-mining の最新の結果は ${fm_latest:-（無し）}。画面の文言への指摘の記録は ${UI_TEXT_LOG}（無ければ飛ばす。期間内の項目だけを使う）。作業の筋違いを判定する Stop hook の記録は ${GATE_LOG}（無ければ飛ばす。期間内の行だけを使う）。本スキルの前の結果は ${prev_reports:-（無し）}。否認リストは ${REJECTIONS}、skill-audit の変更の記録は ${SKILL_AUDIT_HISTORY}、利用者の環境だけの決まりは ${OVERRIDE_FILE}（無ければ飛ばす）。結果の出力先は ${report}。会話の履歴（jsonl）は読まない（権限で拒否している）。"
+PROMPT="Skill weakness-review を自動モードで実行する（本文の「2. 週次の見直し」）。対象の期間は ${since} 以降。材料: 今週の指摘の記録は ${entries}（${count}件）。feedback-mining の最新の結果は ${fm_latest:-（無し）}。画面の文言への指摘の記録は ${UI_TEXT_LOG}（無ければ飛ばす。期間内の項目だけを使う）。本スキルの前の結果は ${prev_reports:-（無し）}。否認リストは ${REJECTIONS}、skill-audit の変更の記録は ${SKILL_AUDIT_HISTORY}、利用者の環境だけの決まりは ${OVERRIDE_FILE}（無ければ飛ばす）。結果の出力先は ${report}。会話の履歴（jsonl）は読まない（権限で拒否している）。"
 
 for lsc in "${CHANGE_REVIEW_SCRIPTS:-}" "$SCRIPT_DIR/../../change-review/scripts" \
   ${skill_dirs[@]+"${skill_dirs[@]/%//change-review/scripts}"}; do
@@ -164,7 +162,7 @@ while IFS= read -r lr; do [ -n "$lr" ] && link_reals+=("$lr"); done < <(skill_li
 read_scopes=(${config_dirs[@]+"${config_dirs[@]}"} "$HOME/.agents" "$REPORTS_ROOT" "$STATE_BASE" "$PROPOSALS_DIR")
 allowed=(Skill)
 for d in "${read_scopes[@]}"; do allowed+=("Read(/$d/**)"); done
-allowed+=("Read(/$OVERRIDE_FILE)" "Read(/$SKILL_AUDIT_HISTORY)" "Read(/$UI_TEXT_LOG)" "Read(/$LOG_MD)" "Read(/$GATE_LOG)")
+allowed+=("Read(/$OVERRIDE_FILE)" "Read(/$SKILL_AUDIT_HISTORY)" "Read(/$UI_TEXT_LOG)" "Read(/$LOG_MD)")
 # common.md など、CLAUDE.md が「読め」と指す先（ai-agents の共通設定）も決まりの検索に含める。
 AI_AGENTS_DIR="${AI_AGENTS_CONFIG_DIR:-$HOME/.config/ai-agents}"
 [ -d "$AI_AGENTS_DIR/instructions" ] && allowed+=("Read(/$AI_AGENTS_DIR/instructions/**)" "Read(/$AI_AGENTS_DIR/config.json)")

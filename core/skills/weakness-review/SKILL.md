@@ -66,7 +66,6 @@ Skill `feedback-mining` との分担は次のとおりである。
    - 今週の記録（取り出したファイル）
    - `feedback-mining` の最新の結果（あれば）。記録と同じ指摘は1件として数える
    - 画面の文言の記録のうち今週の分（あれば）
-   - 作業の筋違いを判定する Stop hook の記録のうち今週の分（あれば。既定は `~/.local/state/alignment-gate/log.jsonl`）。`ng` の行は利用者の指摘ではなく判定役の見立てなので、弱点の根拠に数えるときは「hook の判定」と分けて書く。利用者が後で同じ問題を指摘していれば1件として数える。`ng` の件数と、その後の会話で判定が誤りとされた件数（誤った判定の割合）を「1.」に書く。誤りとされた件数は、`"event": "user_verdict"` の行（`result` が `misjudged`・`correct`）で数える。`ng` に比べて `user_verdict` の行が少なければ、記録が漏れている恐れとして「1.」に書く。
    - 本スキルの前の結果（最大4週分）
    - 否認リスト（`~/claude-reports/proposals/rejections.md`）と、Skill `skill-audit` の変更の記録（`history.md`）
 2. 指摘を「原因」で振り分ける。「Claude」と「両方」は弱点の材料にし、「言い回し」と「両方」は利用者の言い回しの読み方（`rules/user-profile.md`。無ければ新しく作る案にする）の材料にする。`feedback-mining` から来た指摘には原因が無いので、ここで付ける。

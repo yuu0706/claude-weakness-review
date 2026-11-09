@@ -116,7 +116,6 @@
 | --- | --- | --- |
 | `WEAKNESS_REVIEW_LOG` | `~/.local/state/claude-reports/weakness-review/log.md` | 指摘の記録 |
 | `UI_TEXT_FEEDBACK_LOG` | `~/.local/state/ui-text/feedback-log.md` | 画面の文言への指摘の記録。あれば材料に加える |
-| `WEAKNESS_REVIEW_GATE_LOG` | `~/.local/state/alignment-gate/log.jsonl` | 作業の筋違いを判定するhookの記録。あれば材料に加える |
 | `CLAUDE_REPORTS_ROOT` | `~/claude-reports` | 結果の置き場所 |
 | `CLAUDE_REPORTS_STATE` | `~/.local/state/claude-reports` | 記録・ロック・前回の実行の印・ログの置き場所 |
 | `CHANGE_REVIEW_SCRIPTS` | なし | `change-review`の`scripts`の場所。無ければスキル置き場の`change-review/scripts`を探す |
